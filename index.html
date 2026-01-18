@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta name="robots" content="noindex">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex">
     <title>Hoshiiro Art Therapy</title>
     <style>
         /* --- Base Settings --- */
@@ -71,6 +71,11 @@
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             cursor: pointer;
             border: 1px solid rgba(0,0,0,0.02);
+            /* Center Alignment */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
         }
 
         .menu-card:hover {
@@ -125,9 +130,9 @@
             color: #fff;
         }
 
-        /* Floating Back Button (Dynamic) */
+        /* Floating Back Button */
         #floating-back-btn {
-            display: none; /* Hidden by default */
+            display: none;
             position: fixed;
             bottom: 30px;
             right: 30px;
@@ -147,7 +152,7 @@
             background: #71869e;
         }
         #floating-back-btn.return-mode {
-            background: #e0b46a; /* Goldish for return to result */
+            background: #e0b46a;
         }
 
         /* --- Color Balls --- */
@@ -223,7 +228,7 @@
             padding: 20px;
             margin-bottom: 20px;
             border: 1px solid #eee;
-            scroll-margin-top: 20px; /* For link jumping */
+            scroll-margin-top: 20px;
         }
         .rune-header {
             display: flex;
@@ -422,6 +427,111 @@
             display: inline-block;
         }
 
+        /* Tooltip */
+        .tooltip-container {
+            position: relative;
+            display: inline-block;
+            margin-left: 5px;
+            cursor: help;
+        }
+        .tooltip-icon {
+            background: var(--accent-color);
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        .tooltip-text {
+            visibility: hidden;
+            width: 250px;
+            background-color: #555;
+            color: #fff;
+            text-align: left;
+            border-radius: 6px;
+            padding: 10px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -125px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.85rem;
+            font-weight: normal;
+        }
+        .tooltip-container:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        /* Accordion (Common Column) */
+        .accordion {
+            margin-top: 40px;
+            border: 1px solid #eee;
+            border-radius: 10px;
+            background: #fff;
+            text-align: left;
+        }
+        .accordion summary {
+            padding: 15px;
+            cursor: pointer;
+            font-weight: bold;
+            color: var(--accent-color);
+            list-style: none;
+            outline: none;
+        }
+        .accordion summary::-webkit-details-marker {
+            display: none;
+        }
+        .accordion-content {
+            padding: 15px;
+            border-top: 1px solid #eee;
+            font-size: 0.9rem;
+            line-height: 1.8;
+            color: #555;
+        }
+
+        /* Greeting & Message Styles */
+        .ehwaz-msg-box {
+            background: #eefcfd;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            text-align: left;
+        }
+        .ehwaz-title-row {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-weight: bold;
+            color: var(--accent-color);
+            margin-bottom: 10px;
+        }
+        .random-greeting {
+            margin-top: 20px;
+            font-style: italic;
+            color: #888;
+            font-size: 0.95rem;
+            border-top: 1px dashed #bdd0e2;
+            padding-top: 10px;
+        }
+
+        /* Intro Text */
+        .intro-text {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+            color: #555;
+            border: 1px solid #eee;
+        }
+
         /* Birthday Input */
         input[type="date"] {
             padding: 10px;
@@ -452,32 +562,36 @@
 
         <div id="menu" class="menu-grid">
             <div class="menu-card" onclick="showSection('color-1')">
-                <div class="menu-title">1. 今日のお守りカラー</div>
+                <div class="menu-title">1. 今日のお守りカラー診断</div>
                 <div class="menu-desc">直感で1色選ぶ。今のあなたに必要なエネルギーと、色に導かれたルーン。</div>
             </div>
             <div class="menu-card" onclick="showSection('color-2')">
                 <div class="menu-title">2. 心の深呼吸（2色）</div>
                 <div class="menu-desc">「表の自分」と「奥の自分」。心のギャップを知り、深く対話する時間。</div>
             </div>
-            <div class="menu-card" onclick="showSection('rune-1')">
-                <div class="menu-title">3. ワンオラクル</div>
-                <div class="menu-desc">最もシンプルで現実的。24時間に1回だけ、今のあなたへのメッセージ。</div>
+            <div class="menu-card" onclick="showSection('rune-wise')">
+                <div class="menu-title">3. ワンオラクル<br>（馬「ワイズ」の導き）</div>
+                <div class="menu-desc">馬「ワイズ」がルーンの囁きを聴いて伝えてくれます。<br>※1日1回（24時間に1回）限定</div>
+            </div>
+            <div class="menu-card" onclick="showSection('rune-self')">
+                <div class="menu-title">4. ワンオラクル<br>（自分で読み解く）</div>
+                <div class="menu-desc">自分で占う時、補助のルーンを引く時に。</div>
             </div>
             <div class="menu-card" onclick="showSection('rune-3')">
-                <div class="menu-title">4. スリーオラクル</div>
-                <div class="menu-desc">「現状」「行動」「未来」。3つの流れから物語を読み解く。</div>
+                <div class="menu-title">5. スリーオラクル</div>
+                <div class="menu-desc">「現状」「行動」「未来」を示し、2つの流れから物語を読み解きます。</div>
             </div>
             <div class="menu-card" onclick="showSection('rune-5')">
-                <div class="menu-title">5. ファイブオラクル</div>
+                <div class="menu-title">6. ファイブオラクル</div>
                 <div class="menu-desc">現状・挑戦・行動・手放すもの・未来。深く複雑な状況を紐解く。</div>
             </div>
             <div class="menu-card" onclick="showSection('birthday')">
-                <div class="menu-title">6. 誕生日ルーン</div>
+                <div class="menu-title">7. 誕生日ルーン</div>
                 <div class="menu-desc">生まれ持ったルーンを知る。あなたの魂に刻まれた守護文字。</div>
             </div>
             <div class="menu-card" onclick="showSection('rune-list')">
-                <div class="menu-title">7. ルーン一覧（詳細解説）</div>
-                <div class="menu-desc">すべてのルーンの意味、占い師による詳細な読み解き、対策まで網羅した事典。</div>
+                <div class="menu-title">8. ルーン一覧（詳細解説）</div>
+                <div class="menu-desc">すべてのルーンの意味、詳細な読み解き、対策まで網羅した事典。</div>
             </div>
         </div>
 
@@ -497,33 +611,55 @@
             <div class="back-btn" onclick="goHome()">メニューへ戻る</div>
         </div>
 
-        <div id="section-rune-1" class="section">
-            <h2>ワンオラクル</h2>
-            <p>目を閉じて、心のなかで今の気持ちを思い浮かべてルーンを選び取ります。<br>
-            <span style="font-size:0.8rem; color:#777;">※ご自身で引くのは1日1回（24時間）までです。</span></p>
+        <div id="section-rune-wise" class="section">
+            <h2>ワンオラクル（馬「ワイズ」の導き）</h2>
+            <div class="intro-text">
+                目を閉じて、心を空白にして……<br>
+                心が落ち着いたら尋ねたい問題を心に思い浮かべてごらん。<br>
+                急がなくていいよ。ゆっくり考えてね。<br>
+                準備ができたら、ルーンの小石を1つ選び取るよ。
+            </div>
             
-            <button class="oracle-btn" onclick="drawOneOracle(false)">ルーンを引く</button>
-            <button class="other-btn" onclick="drawOneOracle(true)">他の人を占う</button>
+            <button class="oracle-btn" onclick="drawWiseOracle(false)">ルーンを選ぶ</button>
+            <button class="other-btn" onclick="drawWiseOracle(true)">他の人を占う</button>
 
-            <div id="result-rune-1-msg"></div>
-            <div id="result-rune-1" class="oracle-layout"></div>
+            <div id="result-rune-wise-msg"></div>
+            <div id="result-rune-wise" class="oracle-layout"></div>
+            <div class="back-btn" onclick="goHome()">メニューへ戻る</div>
+        </div>
+
+        <div id="section-rune-self" class="section">
+            <h2>ワンオラクル（自分で読み解く）</h2>
+            <div class="intro-text">
+                じゃあ心を空にして問題を描いたらルーンを選んで。
+            </div>
+            <button class="oracle-btn" onclick="drawSelfOracle()">ルーンを選ぶ</button>
+            <div id="result-rune-self" class="oracle-layout"></div>
             <div class="back-btn" onclick="goHome()">メニューへ戻る</div>
         </div>
 
         <div id="section-rune-3" class="section">
             <h2>スリーオラクル</h2>
-            <p>目を閉じて、心のなかで今の気持ちを思い浮かべてルーンを選び取ります。<br>
-            現状・行動・新たな状況を示す3つの石。</p>
-            <button class="oracle-btn" onclick="drawRune(3)">ルーンを引く</button>
+            <div class="intro-text">
+                目を閉じて、心を空白にして……<br>
+                心が落ち着いたら尋ねたい問題を心に思い浮かべてごらん。<br>
+                急がなくていいよ。ゆっくり考えてね。<br>
+                問題をはっきり心に描きながら、ルーンを選び取るんだ。思い描けたら選び取ってもいいよ。
+            </div>
+            <button class="oracle-btn" onclick="drawRune(3)">ルーンを選ぶ</button>
             <div id="result-rune-3" class="oracle-layout"></div>
             <div class="back-btn" onclick="goHome()">メニューへ戻る</div>
         </div>
 
         <div id="section-rune-5" class="section">
             <h2>ファイブオラクル</h2>
-            <p>目を閉じて、心のなかで今の気持ちを思い浮かべてルーンを選び取ります。<br>
-            より複雑な状況を把握するための5つの石。</p>
-            <button class="oracle-btn" onclick="drawRune(5)">ルーンを引く</button>
+            <div class="intro-text">
+                目を閉じて、心を空白にして……<br>
+                心が落ち着いたら尋ねたい問題を心に思い浮かべてごらん。<br>
+                急がなくていいよ。ゆっくり考えてね。<br>
+                問題をはっきり心に描きながら、ルーンを選び取るんだ。思い描けたら選び取ってもいいよ。
+            </div>
+            <button class="oracle-btn" onclick="drawRune(5)">ルーンを選ぶ</button>
             <div id="result-rune-5" class="oracle-layout"></div>
             <div class="back-btn" onclick="goHome()">メニューへ戻る</div>
         </div>
@@ -581,13 +717,14 @@
         ];
 
         // --- DATA: Runes ---
-        // mannaz.png に修正済み
         const runes = [
             {
                 id: 0,
                 name: "フェオ", en: "Fehu", char: "F", img: "fehu.png", 
                 meaning: "家畜・財産・豊かさ",
-                basic_desc: "成長を促し、豊かな実りを意味するルーン。地道な努力による成功。",
+                odin_pos: "君が何かを得るという事の意味を、深く考えなければならない。\n君が幸せになるために必要なものは何か。\n富や財産？\n精神的な成長？\nもう手に入れたものも、どうやってそれを保つかよく注意しなければいけない。\n運が向いている時にはなおさらだよ。",
+                odin_rev: "君は今、大きな欲求不満を感じているのかもしれない。\n些細なものから大切なものまで、何かを失いつつあるのかもしれない。\n何が起きているのかをよく観察してみて。\nそこから何を学べるのか、という視点でね。\n君が今豊かだとしても、自分の成すべき事を考えなければならない。\n手にしたものにしがみつき、恵みを他人に分け与えないなら、後は失うだけになる。",
+                detail_basic: "成長を促し、豊かな実りを意味するルーン。地道な努力による成功。",
                 teller_desc: "フェオは「家畜」を意味するルーン。かつて貨幣の無い時代では「家畜」をどれだけ多く所有するかが豊かさの象徴でした。現在では自分が所有している「お金」や「スキル」、「人脈」など財産となるものを指します。財産があるからこそ心に余裕ができ、豊かな心がさらに財産を増やします。一朝一夕ではなく、手間暇かけてコツコツ積み重ね、育み続けることで実るものです。「今自分が持っているものを堅実に増やす」という目線で、ズルせず心穏やかに真面目に励むことを応援してくれるルーンです。",
                 pos: {
                     summary: "今まで育ててきたものに実りがある。地道な努力による成功。",
@@ -610,7 +747,9 @@
                 id: 1,
                 name: "ウル", en: "Uruz", char: "U", img: "uruz.png",
                 meaning: "力・野牛・本能・勢い",
-                basic_desc: "大きく荒々しいエネルギー。積極的な前進が必要。",
+                odin_pos: "君の中で、一つの舞台が幕を迎えた。\n新たな舞台に立つ準備を始める時だ。\nそのために、何らかの別れや損失を経験するだろう。\nけれどそれは、新しい君には必要ないものだ。\n勇気を持って古い殻を脱ぎ捨てればいい。\nそしてその損失から、新しい物の見方を見つけ出すんだ。",
+                odin_rev: "見る目と聴く耳を持つんだ。\nそうしなければ、君は目の前のチャンスを逃し、自分の立場を弱くしてしまう。\n小さな失敗や挫折は、君にヒントを与えるための警告。\nまずは元気を出すこと。\n全てには始まりがあり、終わりがある。\n暗闇へ続く道へ差し掛かったとしても、来た道を引き返さないで。\n流れに逆らわず、波に乗るんだ。",
+                detail_basic: "大きく荒々しいエネルギー。積極的な前進が必要。",
                 teller_desc: "ウルは野生の牛オーロックスを意味し、野生的な力強さ、ダイナミックさを象徴します。メッセージはとにかく「進め！」。本能のままに自分が行きたい方向に突き進む勇気を思い出させてくれます。弱気にならず、考え込むより行動すること。「大丈夫、自分はできる！」と信じて前進することで、パワーはさらに増幅します。知性を一旦置いておいて、勢いとパッションでガンガンいってみましょう。",
                 pos: {
                     summary: "とにかく「進め！GOGO！」思うがままに突っ走れ。",
@@ -633,7 +772,9 @@
                 id: 2,
                 name: "ソーン", en: "Thurisaz", char: "TH", img: "thurisaz.png",
                 meaning: "門・巨人・棘・茨",
-                basic_desc: "衝動的な感情や情動。忍耐の必要性。",
+                odin_pos: "今は決断や行動の時じゃない。\n門をくぐる前に、立ち止まり過去を振り返るんだ。\n君の今までの人生すべてが、君の背後と足元に横たわっている。\n喜び、悲しみ、成功、失敗。\n全部が君をここへ導くためのもの。\nそれらをよく観察し、内省し、祝福し、開放した時が――\n君が門をくぐる時だよ。",
+                odin_rev: "君は今、急速に成長している。\nけれど今求められているのは、自分自身について深く考える事。\n今先を急ぐと、後悔する事になるかもしれない。\n焦りや弱さから、今よりもっと大きな問題を引き起こす可能性がある。\n衝動を理性で抑えて。\nまだ始めてもいないのに、先へ進もうとしないで。\n進む道の質は、君の態度と意志に掛かっている。\n苦しむ自分を見て、さらに苦しまないで。",
+                detail_basic: "衝動的な感情や情動。忍耐の必要性。",
                 teller_desc: "非常に苦難の多い「茨の道」の中にいるような、動きにくい状態を表します。進めたいのに邪魔が入る、強引に進めるとトゲが刺さる、そんな「進むな！」という合図です。焦って無理やり動こうとせず、今はそういう時期だと認めて、目の前の出来ることを淡々とこなして時を待つのが賢明です。また、トゲは外に向ければ「魔除け」にもなります。自分を守るために使いましょう。",
                 pos: {
                     summary: "身動きがとりづらい時期。無理に進めず地盤を固めよう。",
@@ -656,7 +797,9 @@
                 id: 3,
                 name: "アンスール", en: "Ansuz", char: "A", img: "ansuz.png",
                 meaning: "神・言葉・伝達・知性",
-                basic_desc: "コミュニケーションを意味するルーン。良い情報を得る。",
+                odin_pos: "君の新しい生活のサイクルが始まろうとしているサインだ。\n人との出会い、特に自分より目上の人や、物事をよく知っている人との出会いに注意してごらん。\n出会いのすべてが、君に何かを伝えようとするメッセージ。\nいつもは聞き流している言葉に、重要な意味が隠されている。\nなぜか耳に残った言葉を大切にするといい。\nどんな信号や警告も、受け取るタイミングが良ければ君へのプレゼントになる。\n思いもかけない出来事を期待していてごらん。",
+                odin_rev: "君は今、自己嫌悪に陥っているかもしれない。\nコミュニケーションをうまく取れなかった事。\n自分の不注意や把握の甘さで起きた失敗。\n必要以上に自分を責めて、目の前のものを受け取ってはいけないと感じていないかい？\n何をやっても無駄で、うまくいかない感覚。\nけれど、それは君の成長にとって最適な時期に起きている。\n目を背けないで。\n抜け出すまでに、長くはかからない。",
+                detail_basic: "コミュニケーションを意味するルーン。良い情報を得る。",
                 teller_desc: "「言葉」や「伝達」がキーワード。伝えるべきことを丁寧にわかりやすく伝える努力や、コミュニケーションの機会を増やすことの大切さを説いています。迷ったら会話をする、情報を集める、勉強する。言葉は時に人を傷つけますが、それ以上に励みや原動力になります。自分を幸せにする言葉、ポジティブな言葉を使っていきましょう。",
                 pos: {
                     summary: "コミュニケーションを大切に。言葉で伝えることで道が開く。",
@@ -679,7 +822,9 @@
                 id: 4,
                 name: "ラド", en: "Raido", char: "R", img: "raido.png",
                 meaning: "旅・移動・車輪",
-                basic_desc: "旅や移動を意味する。変化や前進。",
+                odin_pos: "自分の力だけを頼みに、がむしゃらに動くべきじゃない。\n自分を正しい道へ導くものは何か、尋ねてごらん。\n何が必要なのか、君は「知っている」。\n無理に動かず、じっと待ちながら抵抗を取り除くんだ。\nそれは君自身を癒し、変革し、一つにする旅となる。",
+                odin_rev: "今は和解よりも、不和に流れがちだね。\nユーモアを忘れないで。\n君の旅の計画とは全く違ってしまうかもしれないし、望んだ結果は得られないかもしれない。\nけれど、すべての壁や回り道は、君の道を整えるのに必要なものだったんだ。",
+                detail_basic: "旅や移動を意味する。変化や前進。",
                 teller_desc: "「Ride」「Road」と同語源。「乗る」「移動する」という意味から、物事が早く動きやすい時期を表します。物理的な移動だけでなく、インターネット上のやり取りや、フットワークの軽さも含まれます。迷っているなら動く！「乗る」チャンスがあれば乗る！一箇所にとどまって考えるより、場所を変えたり動いてみることでアイデアが湧きます。軽快に、サクサクと進みましょう。",
                 pos: {
                     summary: "考え込むよりとにかく動いてみよう。流れに乗る。",
@@ -702,7 +847,9 @@
                 id: 5,
                 name: "ケン", en: "Kenaz", char: "K", img: "kenaz.png",
                 meaning: "火・松明・情熱",
-                basic_desc: "情熱的な勇気や行動力。自信を与える。",
+                odin_pos: "活動の開始のルーンだよ。\n君を覆う暗闇が晴れ、新たな澄んだ状態が訪れる。\nその光は、君のなかにある。\n君が流れの中心なんだ。\n君が歩み寄り、君が与え、率先して行動を起こしていける。\n松明の明かりのように、惜しみなく光を周囲にもたらすんだ。",
+                odin_rev: "失う事を恐れないで。\n万物は変化し続ける。\n変わることは、成長すること。\n古いものを喜んで捨て、身軽になって待っていてごらん。\n新しい輝き、始まりへの準備期間だよ。",
+                detail_basic: "情熱的な勇気や行動力。自信を与える。",
                 teller_desc: "「松明」の火。暗闇に明かりが灯り、先への展望が見えてくるポジティブなイメージです。無尽蔵に燃える火ではなく、人間が扱う「知恵の光」や「情熱の灯火」です。何かを始めたい、挑戦したいという情熱に気づいたなら、その火を消さないように守り、スタートを切ってください。例え今が暗闇でも、希望の灯火は必ずあります。",
                 pos: {
                     summary: "この先の展望が明るくなる。やる気を感じたらはじめてみよう。",
@@ -725,7 +872,9 @@
                 id: 6,
                 name: "ギューフ", en: "Gebo", char: "G", img: "gebo.png",
                 meaning: "贈り物・愛・才能",
-                basic_desc: "愛情やパートナーシップ。与えることと受け取ること。",
+                odin_pos: "新しい出会いが近づいている。\nその出会いの中で、自分自身を見失わないで。\n真のパートナーシップとは、足りない部分を補い合い頼り合うような関係じゃない。\n互いの個性を抑えることなく、それぞれが完全で対等な関係にあってのみ成立するものなんだ。\n真のパートナーシップは、君をより高みへと導いてくれる。",
+                odin_rev: null,
+                detail_basic: "愛情やパートナーシップ。与えることと受け取ること。",
                 teller_desc: "「Gift」「Give」。人から人へ与える純粋な愛や思いやりを表します。また、神から与えられた特別な才能（ギフト）という意味もあります。自分が持っている才能や環境に感謝し、それを人のために活かすこと。見返りを求めない愛情、お互いに思いやり合える対等で優しい関係性を示唆します。",
                 pos: {
                     summary: "思いやりのある関係。感謝の気持ちに目を向ける。",
@@ -741,7 +890,9 @@
                 id: 7,
                 name: "ウィン", en: "Wunjo", char: "W", img: "wunjo.png",
                 meaning: "喜び・成就・満足",
-                basic_desc: "喜びや心の充実。努力の実り。",
+                odin_pos: "起こるべき変化の時は終わり、光あふれる春が訪れる。\n今こそ祝福を受け取る時。\n意識は鮮明となり、単なる知識は真の理解へと変わる。\n目覚めた君の意識が、今までの計画や野心を放棄する事を求めるなら、今がその実行の時だよ。",
+                odin_rev: "果実が実るには時間がかかる。\n困難な道のりや試練が、君に迫り来るだろう。\n君が大きな実りを手にする器の人間なのか、今試されている。\n誠実さや真剣さ、物事に対し無心な気持ちで対処できる人間なのか。\nすべては試練。\n「今」この瞬間の一歩一歩を大切に歩めば、必ず成功する。",
+                detail_basic: "喜びや心の充実。努力の実り。",
                 teller_desc: "自分にとっての「喜び」を表します。世間的な成功ではなく、本人が心から満足し喜べるかどうかが基準です。過酷な環境でも、自分が喜びを感じられるならそれはウィンの状態です。迷っているなら「自分が喜べる方」「ワクワクする方」を選びましょう。未知の喜びに向かって進むことを応援してくれます。",
                 pos: {
                     summary: "自分の中で喜びが感じられる出来事。満足につながる。",
@@ -764,8 +915,10 @@
                 id: 8,
                 name: "ハガル", en: "Hagalaz", char: "H", img: "hagalaz.png",
                 meaning: "雹・変革・崩壊",
-                basic_desc: "突然のハプニングやアクシデント。不可避の変化。",
-                teller_desc: "空から降る「雹（ひょう）」のように、予測不能で突発的な出来事を表します。自分の力ではどうにもならない自然の摂理のような変化です。一見悪いことのように思えても、壊れた後には新しい世界が生まれます。変化に逆らわず、ドンと受け止めて力強く生きる覚悟を持ちましょう。これは新しいチャンスへの破壊かもしれません。",
+                odin_pos: "訪れる崩壊の警告。\nけれどそれは、君の目を覚まさせるために起こるもの。\n安全、自分自身、人間関係、信念。\n君の信じてきたものは、実は全く根拠のないものだったのかもしれない。\nその崩壊は人知を超えた天災に見えても、創り出しているのは君自身だ。\nけれど恐れることはない。\n未然に警告されるということは、それが君の人生、成長にとって必要なものだという事。",
+                odin_rev: null,
+                detail_basic: "突然のハプニングやアクシデント。不可避の変化。",
+                teller_desc: "空から降る「雹（ひょう）」のように、予測不能で突発的な出来事を表します。自分の力ではどうにもならない自然の摂理のような変化です。一見悪いことのように思えても、壊れた後には新しい世界が生まれます。変化に逆らわず、ドンと受け止めて力強く生きる覚悟を持つことが大切です。これは新しいチャンスへの破壊かもしれません。",
                 pos: {
                     summary: "思いがけない出来事。変化の時。受け入れる力を持つ。",
                     past: "予測のつかない変化。長い目で見れば良かったと感じられることも。",
@@ -780,7 +933,9 @@
                 id: 9,
                 name: "ニイド", en: "Nauthiz", char: "N", img: "nauthiz.png",
                 meaning: "束縛・欠乏・忍耐",
-                basic_desc: "必要なものと欠乏。忍耐が必要な時期。",
+                odin_pos: "物事が滞り、計画を見直さなければならなくなるかもしれない。\nけれど周囲に腹を立てるべきじゃない。\n自分の影の部分を直視するんだ。\n今の人生に不運を呼び寄せる原因が、自分のどこにあるのか。\n目を逸らさず、ゆっくりとよく考え、進む前に自分の改めるべきところを探す事が、今は必要だよ。",
+                odin_rev: "君の中にあるものを否定してはいけない。\n否定されたもの達は、後に混乱を引き起こす。\n必要なのは、否定じゃなく浄化。\n苦痛や制限を疎ましく思わないで。\n君に必要なのは、怒りを完全に制御し、衝動を抑えること。\n君の中の闇を光の中に連れてきて、浄化するんだ。\n謙虚さと明るさ、揺るぎない信念を忘れないで。",
+                detail_basic: "必要なものと欠乏。忍耐が必要な時期。",
                 teller_desc: "「Need」。欠乏や不足を感じ、それを埋めたいと渇望している状態です。「〜がないとダメだ」という執着や、ないものねだりになっていませんか？不足に焦点を当てすぎず、「本当に必要なのか」を冷静に見極める必要があります。今は忍耐の時かもしれませんが、執着から開放されることで楽になれるかもしれません。",
                 pos: {
                     summary: "足りないことに集中している。忍耐が必要な時期。",
@@ -803,7 +958,9 @@
                 id: 10,
                 name: "イス", en: "Isa", char: "I", img: "isa.png",
                 meaning: "氷・停止・静寂",
-                basic_desc: "停滞を意味するルーン。時を待つ。",
+                odin_pos: "冬の時期が訪れている。\n気力や精神力は衰え、全くの無力。\n長く抱いた願望さえ、犠牲にしなくてはならないかもしれない。\nなぜこんな事が起きているのか、理解できない違和感を感じるかもしれないね。\nけれど、それでいい。\n今はそういう「時期」なんだ。\n無理にあがいたり、人に頼ったりせず、春の訪れを待つべき時だよ。",
+                odin_rev: null,
+                detail_basic: "停滞を意味するルーン。時を待つ。",
                 teller_desc: "「Ice」。氷のように事態が凍結し、停止している状態です。冬の時期であり、今は何かを始めたり活発に動く時ではありません。しかし、停止は「終わり」ではなく、氷が溶けるのを待つ「保存」の時間でもあります。焦らず、変わらない状況を受け入れ、力を温存したり自分を見つめ直す（内観）期間として過ごしましょう。",
                 pos: {
                     summary: "今はまだ準備のとき。動かない状況を受け入れ、力を蓄えて。",
@@ -819,8 +976,10 @@
                 id: 11,
                 name: "ヤラ", en: "Jera", char: "J", img: "jera.png",
                 meaning: "収穫・一年・継続",
-                basic_desc: "収穫や一年のサイクル。日々の積み重ね。",
-                teller_desc: "「Year」。農業での収穫までの一年を表します。種をまき、育て、ようやく収穫するように、日々のコツコツとした積み重ねが実を結ぶことを教えてくれます。すぐに結果を求めず、計画的に努力を続けること。「継続は力なり」。地味に見える作業に見えても、それは確実に未来の大きな収穫へと繋がっています。",
+                odin_pos: "有益な結果を意味するルーンだね。\n君が真剣に関わってきたことすべてに当てはめられる。\nけれど、すぐに結果が現れることを期待しちゃいけない。\nこのルーンは、季節の一巡――夏と冬が巡る一年のサイクルを表しているんだ。\n君は土地を耕し、種を蒔いた。\n今は、それを忍耐強く大事に育てる時期だよ。",
+                odin_rev: null,
+                detail_basic: "収穫や一年のサイクル。日々の積み重ね。",
+                teller_desc: "「Year」。農業での収穫までの一年を表します。種をまき、育て、ようやく収穫するように、日々のコツコツとした積み重ねが実を結ぶことを教えてくれます。すぐに結果を求めず、計画的に努力を続けること。「継続は力なり」。地味な作業に見えても、それは確実に未来の大きな収穫へと繋がっています。",
                 pos: {
                     summary: "今までの努力が実を結ぶ。長いスパンで取り組む。",
                     past: "努力に対して報酬を得られる時。たくさんの思い出の共有が大事。",
@@ -835,7 +994,9 @@
                 id: 12,
                 name: "ユル", en: "Eihwaz", char: "Y", img: "eihwaz.png",
                 meaning: "死と再生・変化・イチイの木",
-                basic_desc: "死と再生を意味する。方向転換を促す。",
+                odin_pos: "今必要なのは、根気強さと先見の明。\n今は我慢強く、防御に徹する時だよ。\n行動する前に先を見通し、困難を避けよ。\nこのルーンはそう言っている。\n助けを求めることも、闇雲に動き回る事も、今は違う。\n辛いかもしれないけれど、必ず君を成長させる。",
+                odin_rev: null,
+                detail_basic: "死と再生を意味する。方向転換を促す。",
                 teller_desc: "イチイの木は死と関連付けられますが、同時に長寿で再生のシンボルでもあります。何かが終わることで新しい何かが始まる、大きな転換期を表します。過去の自分や古い状況に別れを告げ（死）、新しい自分へと生まれ変わる（再生）時です。終わりを受け入れることは辛いかもしれませんが、それは新しいステージへ進むために必要なプロセスです。",
                 pos: {
                     summary: "変化の時期。終わりを迎えることで始まることがある。",
@@ -851,7 +1012,9 @@
                 id: 13,
                 name: "ペオース", en: "Perthro", char: "P", img: "perthro.png",
                 meaning: "秘密・ダイス・偶然",
-                basic_desc: "ギャンブルや意外性。必要な運を味方にする。",
+                odin_pos: "外に現れていることが大切なんじゃない。\n外面は単に、内に深く潜むものを反映しているだけなんだ。\n今は変革の時。\n今君にもたらされるものは、まだ不確かなものかもしれない。\nけれど後に、予想もしなかった収穫が得られる。\n君の心が研ぎ澄まされた時、このルーンは答えを示すだろう。",
+                odin_rev: "否定的なものを全て「運が悪い」の一言で片付けるべきじゃない。\nそれらは君に何かを伝えようとしているんだ。\nどんな障害も、関わり方を選ぶ権利は常に君にある。\n自分へのメッセージを吸収するつもりで、忍耐強くあたってごらん。\n全ては君を磨くための訓練だよ。",
+                detail_basic: "ギャンブルや意外性。必要な運を味方にする。",
                 teller_desc: "「ダイスカップ」。サイコロを振るまで何が出るかわからないように、予測不能な未来や偶然のハプニングを表します。一か八かの賭けや、思いがけないチャンス。何が起きるかわからないことを楽しみ、「ピンチはチャンス」と捉えてポジティブに道を切り開く余裕が大切です。意外な展開にワクワクしてみましょう。",
                 pos: {
                     summary: "思いがけないチャンス。偶然をチャンスに変える。",
@@ -874,7 +1037,9 @@
                 id: 14,
                 name: "エオロー", en: "Algiz", char: "Z", img: "algiz.png",
                 meaning: "守護・仲間",
-                basic_desc: "大切な仲間や友情。守られている安心感。",
+                odin_pos: "今君に必要なのは、感情の変化に溺れないこと。\n落ち込みや負の感情だけじゃなく、気分の高揚も同じことだよ。\n新たなチャンスやチャレンジが訪れるかもしれない。\nけれど同時に、邪魔が入る可能性もある。\nそんな時に感情的にならないで。\n分別ある振る舞いこそが君を守る。\n君を守ってくれる人々を失わないためにもね。",
+                odin_rev: "君を利用している人、利用しようとしている人を見極めなければならない。\n付き合いを続けるにしても、事実を認識した上でね。\n君もまた、他人の重荷の上にさらに自分の重荷を負わせるような事をしないで。\n自制心を持ち、礼節を知り、注意深くあれば、このルーンの保護を得られるだろう。\nそれと、健康にも注意した方がいい。",
+                detail_basic: "大切な仲間や友情。守られている安心感。",
                 teller_desc: "ヘラジカの大きな角は「防御」を、群れは「仲間」を表します。あなたは守護されており、信頼できる仲間がいることを示しています。一人で戦わず、仲間を頼り、共に進むことで力は倍増します。また、あなた自身が堂々としているだけで、戦わずして身を守れる（魔除け）存在になれることも教えてくれています。",
                 pos: {
                     summary: "仲間と行うことでパワーアップ。何かに守られている。",
@@ -897,7 +1062,9 @@
                 id: 15,
                 name: "シゲル", en: "Sowelu", char: "S", img: "sowelu.png",
                 meaning: "太陽・光・勝利",
-                basic_desc: "非常に大きな力やエネルギー。活力や元気。",
+                odin_pos: "君が得ようと努力しているものは、君が生まれつき持っているもの。\n君がまだ気付いていないだけ。\nただ、君のエネルギーを使い果たさせようとする人や物事には注意が要る。\n撤退もまた一つの勇気。\n場合によっては、君の心の中の否定され秘められてきた部分に光が当てられることがある。\n自身を認め、解放するときだよ。\nそれと、「思い上がることのないように」。\nルーンはそう告げている。",
+                odin_rev: null,
+                detail_basic: "非常に大きな力やエネルギー。活力や元気。",
                 teller_desc: "「Sun」。圧倒的なエネルギーを持つ太陽のルーン。今のあなたは活力に満ち溢れています。その明るいパワーを信じて、恐れずどんどん進んでください。あなたが輝くことで周囲も照らされ、良い連鎖が起きます。悩みなんて吹き飛ばすくらいの勢いで、堂々と、ポジティブに、自分らしく行動しましょう。成功は約束されています。",
                 pos: {
                     summary: "明るく気力に満ち溢れる。休むより行動していこう。",
@@ -913,7 +1080,9 @@
                 id: 16,
                 name: "ティール", en: "Teiwaz", char: "T", img: "teiwaz.png",
                 meaning: "勝利・勇気・正義",
-                basic_desc: "勝利と男性的なもの。実力を発揮する。",
+                odin_pos: "戦士の最大の敵は己自身。\n君の抱える劣等感は、君自身が作り出したもの。\n自分自身の克服は、生涯を通しての探求。\n事象に常に敏感であれ。\n目標に向けて真っ直ぐと歩め。\nそして人への思いやり。\n軍神ティールはフェンリス狼を捕らえるために、自らの手を犠牲にした。\n勇気と献身を示すルーンだよ。",
+                odin_rev: "焦りから行動を起こしてはいけない。\n君の行動の動機を確かめることを、このルーンは求めている。\n自己の克服？\n他人の支配？\n結果のため？\n過程そのもの？\n答は君の中にしかない。\nそれと、もし人付き合いが短く終わってしまっても嘆かないで。\nその付き合いの寿命が終わっただけ。\n自信を失う事はない。",
+                detail_basic: "勝利と男性的なもの。実力を発揮する。",
                 teller_desc: "軍神ティールのルーン。戦いでの勝利や正義を意味し、「勇気を持って立ち向かえ」と背中を押しています。負けることへの不安を捨て、「勝つ」と信じて戦略を練り、情熱を持って挑んでください。例え結果がどうあれ、その勇気ある挑戦はあなたの糧になります。自分を信じて一歩踏み出す強さを持ちましょう。",
                 pos: {
                     summary: "勇気を持って立ち向かう。負けることではなく勝つことを考える。",
@@ -936,7 +1105,9 @@
                 id: 17,
                 name: "ベオーク", en: "Berkana", char: "B", img: "berkana.png",
                 meaning: "誕生・母性・成長",
-                basic_desc: "母性や慈愛。包み込むような包容力。",
+                odin_pos: "君は今、一つの節目に立っている。\n大きな成長の時だよ。\n成長を妨げる、自分の中の抵抗を取り除かなきゃいけない。\nはっきりとした意識と強い意志、正しい動機が要る。\n時には人の手を借りる事も必要だね。\n謙虚に、忍耐強く、寛容に。\nそうすれば良い成長を遂げられるよ。",
+                odin_rev: "君の成長を妨げているのは、君自身。\nうまく対処できずチャンスを逃し、失望を味わうかもしれない。\nけれど必要なのは失望じゃなく、努力を続けること。\n何が起こったのかを見極め、自分が望んでいた事、他人が望んでいた事を考えてごらん。\n自分の欲求ばかりを優先させていなかったかい？\n君の成長を阻むものを突き止め、乗り越えれば、成長は約束されている。",
+                detail_basic: "母性や慈愛。包み込むような包容力。",
                 teller_desc: "「白樺」。荒地でも育ち、森を作る母のような木です。「新しい始まり」や「成長」を意味します。何かを始め、それをじっくりと育んでいくこと。すぐに結果を求めず、長い目で見て穏やかに見守る姿勢が大切です。自分だけでなく、周囲の人々も含めた「森全体」の成長を願うような、大きな愛と包容力を持ちましょう。",
                 pos: {
                     summary: "新たな始まり。「育むこと」に重きを置く。穏やかに。",
@@ -959,7 +1130,9 @@
                 id: 18,
                 name: "エオー", en: "Ehwaz", char: "E", img: "ehwaz.png",
                 meaning: "馬・早い進展・信頼",
-                basic_desc: "周囲からの協力や変化。スピーディな展開。",
+                odin_pos: "様々な変化が君の周りで起きている。\n物事は移り変わり、変化する事によって、ゆっくりと着実に進歩していく。\n人間関係も同じ。\n互いに成長し長続きするためには、関わり方が何度も変化していく事が必要なんだ。\n今の君に必要なのは、周囲の変化に惑わされず、着実に一歩一歩進んでいく事。\nこの馬のルーンは、君が安全なところまでやって来たことを告げている。\n自信を持って未来と向き合えばいい。\nその先には太陽が輝いている。",
+                odin_rev: "全てのチャンスが君のためにあるわけじゃない。\n全ての扉が君に向けて開かれているわけでもない。\nそのことを認めて、なお「それさえも今の君に必要な事だ」と確信するんだ。\nもし君が、行動すべきか否かを決めかねているなら、\n今君にとって何がふさわしく、何が必要なのか、よく考えてごらん。",
+                detail_basic: "周囲からの協力や変化。スピーディな展開。",
                 teller_desc: "「馬」。かつての最速の移動手段であり、「早い変化」や「移動」を表します。変化の波に乗り、目的地へスピーディに進むこと。そして何より、共に進むパートナー（馬や仲間、周囲の人）を「信頼」することが重要です。疑いを持たず、手綱をしっかり持って信じることで、恐れずにゴールまで駆け抜けることができます。",
                 pos: {
                     summary: "状況の早い変化。変化に乗って自ら進む。周囲を信頼する。",
@@ -982,7 +1155,9 @@
                 id: 19,
                 name: "マン", en: "Mannaz", char: "M", img: "mannaz.png",
                 meaning: "人間・自分・内なる自己",
-                basic_desc: "助け合いや支え合い。チームワーク。",
+                odin_pos: "君に変革の時が訪れようとしている。\n意識を研ぎ澄ましておおき。\nどんな変化が訪れようとも、成功に導くのは君自身の「変わろうとする意志」だけ。\nこのルーンは、謙虚であれと告げている。\n他人に道を譲るひたむきさと穏やかさを持っていれば、君の進むべき道は見えてくる。\n心を静め、自分の変化を恐れないで。\n変化する事は成長する事だよ。",
+                odin_rev: "行き詰まったと感じる時、人に頼らず自分の中に目を向けてごらん。\n他人に害されていると感じるなら、他人を害しているのも君なのかもしれない。\n他人は君の映し鏡。\n頑ななプライドや偏見は捨てて、過去の習慣、物の見方を打ち破ることが要る。",
+                detail_basic: "助け合いや支え合い。チームワーク。",
                 teller_desc: "「人間」。人は一人ではなく、人の中で生きています。広い視野を持ち、「社会の中の自分」「人との関わりの中での自分」を見つめ直す時です。自分とは違う他者を認めることで、自分自身を知ることができます。一人よがりにならず、協力し合い、周囲の助けを素直に受け取ることで道は開けます。",
                 pos: {
                     summary: "人と協力して物事を行う。自己と向き合う時期。",
@@ -1005,7 +1180,9 @@
                 id: 20,
                 name: "ラーグ", en: "Laguz", char: "L", img: "laguz.png",
                 meaning: "水・感性・直観力",
-                basic_desc: "感性や女性的なもの。インスピレーション。",
+                odin_pos: "君は今、見えない流れの中にいる。\n理屈や先入観にとらわれず、自分の直感を信じてごらん。\nこのルーンは、浄化、再評価、組み替え、再調整の時期を知らせ、君に何かを伝えようとしている。\n余計なものにとらわれず、あるがまま、自分のリズムを大切にしてごらん。\nそうすれば流れは君を、君のための場所へと運んでくれる。",
+                odin_rev: "君は、頑張りすぎてはいないかい？\nこのルーンは、行き過ぎや度の越した努力、自分の力を超えて行動しようとすることへの警告だよ。\nそのため君の本能や直感が弱り、本来の知恵を引き出せなくなっているようだ。\n無理に行動するのをやめて、一度すべてを見つめなおし、君の中のバランスを回復させる必要がある。\n舵取りを誤ったまま突き進んでも、望む場所へは辿り着けない。",
+                detail_basic: "感性や女性的なもの。インスピレーション。",
                 teller_desc: "「水」。形を持たず絶えず流れる水のように、状況に合わせて柔軟に変化し、流れに乗ることの大切さを説いています。頭で考えた理屈ではなく、「なんとなく」という直感や感性、湧き上がる感情を信じてみてください。ロマンや情緒を大切にし、芸術に触れるのも良いでしょう。流れに逆らわず、心地よく流れていきましょう。",
                 pos: {
                     summary: "直感を信じる。感情を重視し、留まらず流れに乗る。",
@@ -1028,7 +1205,9 @@
                 id: 21,
                 name: "イング", en: "Inguz", char: "Ng", img: "inguz.png",
                 meaning: "豊穣・生命力・完了",
-                basic_desc: "目標の達成。停滞していたものを活性化させる。",
+                odin_pos: "結実の時期が近づいているよ。\n新しい何かが生まれようとしている。\n何か問題を抱えていたなら、解決の糸口が見つかるかもしれない。\nやりかけの事があるなら、その完成を優先するのもいい。\nそして何かが「完了」したなら、君は新たな始まりに面する。\n古くのしかかっているものたちを一掃し、自分の今いる場所を確認し、新たな道に向かう準備を始めるんだ。",
+                odin_rev: null,
+                detail_basic: "目標の達成。停滞していたものを活性化させる。",
                 teller_desc: "豊穣の神フレイ（イング）を表します。生命が生まれる力、産み出す力（クリエイティビティ）を象徴します。これまでの努力が実り、一つの区切りを迎える時です。成果を喜び、そしてそこで終わるのではなく、次のステージへの「新しい種まき」をする準備期間でもあります。自分の情熱や本能を素直に表現し、新しい自分を誕生させましょう。",
                 pos: {
                     summary: "実りを喜ぶ。新たな出発の時。創造力を信じる。",
@@ -1044,7 +1223,9 @@
                 id: 22,
                 name: "オセル", en: "Othala", char: "O", img: "othala.png",
                 meaning: "世襲財産・故郷・伝統",
-                basic_desc: "伝統や文化、家族関係。受け継がれるもの。",
+                odin_pos: "君が今立っている道は、分岐点となるだろう。\n新しい君にふさわしくない、古く固執していたモノや人間関係を清算する時。\n今求められているのは「脱皮」だよ。\nそれらは手放し難いものかもしれない。\n習慣、性格、地位、自分のイメージ……。\nけれど一度脱ぎ捨てて、本当に必要なものは何かを考え直してごらん。\n手放す事で手に入るものもある。",
+                odin_rev: "今は古い習慣や考えに捕らわれている時じゃないよ。\n君と他の人、両方にとって何が良い事なのかを考えてごらん。\nそして「良い」と思った方向に進むんだ。\nたとえそれが今までの方向と真逆だったとしてもね。\n自分をごまかしたり、人のせいにしちゃいけない。\n自分の中の光に正直に従うんだ。\n「何もしない事によって、全てが成される」",
+                detail_basic: "伝統や文化、家族関係。受け継がれるもの。",
                 teller_desc: "「相続」。土地や財産だけでなく、技術、文化、しきたりなど、代々受け継がれてきた「ルーツ」を意味します。自分のルーツや、今いる場所の歴史を知り、尊重することでヒントが得られます。古いものを大切にし、年長者の意見を聞くこと。突飛な新しいことよりも、伝統的な方法や堅実な道を選ぶほうが今はうまくいきます。",
                 pos: {
                     summary: "年長者の意見を参考に。伝統を大事にする。ルーツを知る。",
@@ -1067,7 +1248,9 @@
                 id: 23,
                 name: "ダエグ", en: "Dagaz", char: "D", img: "dagaz.png",
                 meaning: "1日・夜明け・希望",
-                basic_desc: "ひとつのサイクルの終わりと新しいスタート。",
+                odin_pos: "君自身が大きく変わる時が来ている。\nその変化が大きすぎて、困難な事があるかもしれない。\nけれど君にとってその変化は、完璧なタイミングで起きているんだと分かっておいて。\n夜には朝の光が見えないように、今は予想もつかなくても、光が射すことは保障されている。\nだから何があっても、絶対の信頼を持っていて。\nこのルーンは君を、大きな成功と繁栄の時期へと導いてくれる。\nけれど無茶や、取らぬ狸の皮算用はいけない。\nまだ君には、やるべき事がたくさんあるんだ。",
+                odin_rev: null,
+                detail_basic: "ひとつのサイクルの終わりと新しいスタート。",
                 teller_desc: "「Day」。太陽が昇り、沈む「一日」のサイクルを表します。どんなに辛い夜でも必ず朝は来ます。劇的な変化というよりは、毎日当たり前のようにやってくる「いつもの一日」を大切にすること。地味に見える継続こそが力になります。一か八かの勝負よりも、目の前の出来ることを丁寧にこなし、新しい朝を迎える準備をしましょう。",
                 pos: {
                     summary: "コツコツと地道に取り組む。日々のささやかな幸せを大事に。",
@@ -1083,7 +1266,9 @@
                 id: 24,
                 name: "ウィルド", en: "Wyrd", char: " ", img: "wyrd.png",
                 meaning: "運命・宿命・空白",
-                basic_desc: "ブランクルーン。運命を意味し、新しい可能性を導く。",
+                odin_pos: "空白は終わりであり、始まりでもある。\n君の人生はすでに動き始め、その先は未知。\n未知は君の恐怖を呼び覚ますかもしれない。\n失敗しやしないか。\n見捨てられはしないか。\n全てを奪われはしないか。\nけれど、まだ形になっていないものをコントロールすることなんて出来ないんだ。\n成り行きに身を任せることも、時には必要だよ。\nまずは元気を出して、その流れの中で積極的に行動する事だね。",
+                odin_rev: null,
+                detail_basic: "ブランクルーン。運命を意味し、新しい可能性を導く。",
                 teller_desc: "何も描かれていない空白のルーン。運命の女神ノルンを表し、人間の力ではどうにもならない「宿命」や「運命」を意味します。これから何が起きるか分からない「ゼロ」の状態。不安に思うより、どんな運命も受け入れる覚悟を持ちましょう。白いキャンバスに自由に未来を描くように、新しい気持ちでスタートラインに立つ時です。",
                 pos: {
                     summary: "物事の変化。ゼロからのスタート。運命的な巡り合わせ。",
@@ -1097,33 +1282,39 @@
             }
         ];
 
+        // --- RANDOM GREETINGS ---
+        const randomGreetings = [
+            "幸運を祈っているよ。",
+            "君にルーンの導きがありますように。",
+            "君にルーンの加護を。",
+            "ルーンは常に君と共にある。",
+            "今日一日が素敵な日になりますように。",
+            "小さな幸せを見つけられますように。"
+        ];
+
         // --- FUNCTIONS ---
 
         function showSection(id) {
-            // Find current active section to save history before switching
+            // Check current active for back button logic
             const current = document.querySelector('.section.active');
             if(current) {
-                // If we are moving TO rune-list, save where we came FROM
-                if(id === 'rune-list') {
-                    // Only save if it's NOT the menu (to avoid getting stuck)
-                    const currentId = current.id.replace('section-', '');
-                    if(currentId !== 'menu' && currentId !== 'rune-list') {
-                        lastSourceSection = currentId;
-                    }
+                const currentId = current.id.replace('section-', '');
+                if(id === 'rune-list' && currentId !== 'menu' && currentId !== 'rune-list') {
+                    lastSourceSection = currentId;
                 }
             }
 
-            // Hide all sections
+            // Hide all
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-            // Show target section
+            // Show target
             document.getElementById('section-' + id).classList.add('active');
             // Hide menu
             document.getElementById('menu').style.display = 'none';
 
-            // Scroll to Top
+            // Scroll Top
             window.scrollTo(0, 0);
 
-            // Toggle Floating Button & Text
+            // Floating Button Logic
             const floatBtn = document.getElementById('floating-back-btn');
             if(id === 'rune-list') {
                 floatBtn.style.display = 'block';
@@ -1136,7 +1327,6 @@
                 }
             } else {
                 floatBtn.style.display = 'none';
-                // Reset source if we leave the list for another section (except via return)
                 if(id === 'menu') lastSourceSection = 'menu';
             }
 
@@ -1146,19 +1336,12 @@
             if(id === 'rune-list') initRuneList();
         }
 
-        // Logic for the Floating Button
         function goBackOrHome() {
             if(lastSourceSection && lastSourceSection !== 'menu') {
-                // Return to the previous Oracle Result
                 document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
                 document.getElementById('section-' + lastSourceSection).classList.add('active');
-                
-                // Hide floating button
                 document.getElementById('floating-back-btn').style.display = 'none';
-                
-                // Reset source to menu to avoid confusion
                 lastSourceSection = 'menu';
-                
                 window.scrollTo(0, 0);
             } else {
                 goHome();
@@ -1173,20 +1356,118 @@
             // Reset Results
             document.getElementById('result-color-1').style.display = 'none';
             document.getElementById('result-color-2').style.display = 'none';
-            document.getElementById('result-rune-1').innerHTML = '';
-            document.getElementById('result-rune-1-msg').innerHTML = '';
+            
+            document.getElementById('result-rune-wise').innerHTML = '';
+            document.getElementById('result-rune-wise-msg').innerHTML = '';
+            
+            document.getElementById('result-rune-self').innerHTML = '';
+            
             document.getElementById('result-rune-3').innerHTML = '';
             document.getElementById('result-rune-5').innerHTML = '';
             document.getElementById('result-birthday').style.display = 'none';
             
-            // Reset Color 2 state
             c2_selection = [];
             document.getElementById('c2-instruction').innerText = "まずは1色目。「人に見せている自分」を選んで。";
             
-            // Reset history
             lastSourceSection = 'menu';
-
             window.scrollTo(0, 0);
+        }
+
+        // --- HELPER: Generate Footer Content ---
+        function generateFooterContent(type) {
+            let ehwazMsg = "";
+            let showGreeting = true;
+
+            if (type === 'color1') {
+                showGreeting = false; 
+                // Color1 uses its own logic in initColor1, so this block might be empty or just accordion
+            } else if (type === 'color2') {
+                ehwazMsg = "選んだ色は、今のあなたの心の色。どんな色であっても、それは大切なあなたの感情です。馬が牧草地でただ風を感じるように、今はただ、その気持ちを静かに味わってみてください。大丈夫、呼吸は整っていますよ。";
+            } else if (type === 'one') {
+                ehwazMsg = "ひとつのルーンが、道しるべとして現れました。馬は、乗り手の意思を感じ取って初めて前に進みます。この結果を見て、あなたの心がどう動いたか。その『感覚』こそが、一番の正解です。私たちは、あなたのその一歩を応援しています。";
+            } else if (type === 'three') {
+                ehwazMsg = "過去から未来へ、道は続いています。立ち止まった場所も、走り抜けた場所も、すべてが今のあなたを作る大切な景色です。焦る必要はありません。馬が一歩ずつ蹄（ひづめ）を運ぶように、あなたのペースで、この流れに乗っていきましょう。";
+            } else if (type === 'five') {
+                ehwazMsg = "たくさんのメッセージが集まりましたね。複雑に見えることも、馬の背中の高さから見渡せば、意外とシンプルな道筋が見えてくるものです。すべてを一度に解決しようとしなくて大丈夫。まずは、今一番気になった言葉をひとつだけ、ポケットに入れて持ち帰ってください。";
+            }
+
+            let html = "";
+
+            // 1. Ehwaz Message Box
+            if (ehwazMsg) {
+                html += `
+                <div class="ehwaz-msg-box">
+                    <div class="ehwaz-title-row">
+                        🐎 馬（エワズ）からのメッセージ
+                        <div class="tooltip-container">
+                            <span class="tooltip-icon">?</span>
+                            <span class="tooltip-text">※エワズとは：古代文字ルーンで『馬』を意味し、信頼や前進、良きパートナーを示すラッキーシンボルです。</span>
+                        </div>
+                    </div>
+                    ${ehwazMsg}`;
+                
+                // 2. Random Greeting (Inside Box)
+                if (showGreeting) {
+                    const r = Math.floor(Math.random() * randomGreetings.length);
+                    html += `<div class="random-greeting">${randomGreetings[r]}</div>`;
+                }
+
+                html += `</div>`; // Close box
+            }
+
+            // 3. Common Column (Accordion)
+            html += `
+            <details class="accordion">
+                <summary>＋ 馬（エワズ）と私たちが暮らす場所</summary>
+                <div class="accordion-content">
+                    私たちが今まさに育てている環境、Hoshiiro Healing Fieldには、<br>
+                    家族として共に暮らす馬がいます。<br>
+                    今は、ヒーリングホースとしての在り方を、<br>
+                    日々一緒に学びながら過ごしている家族です。<br>
+                    同じ時間を分け合い、同じ空気を吸い、<br>
+                    日々の小さな変化を感じ合う存在でもあります。<br><br>
+                    そんな馬は、実は古代の占い「ルーン」にも登場します。<br>
+                    馬を象徴するルーンは <strong>エワズ</strong>。<br>
+                    エワズは「共に進む」「呼吸を合わせる」という意味を持つルーンです。<br>
+                    一頭で走る存在ではなく、<br>
+                    人と馬が信頼を重ねながら道を渡っていく姿が重なります。<br>
+                    今回の占いでは、<br>
+                    そのエワズのルーンに、<br>
+                    少しだけ皆さんの幸せを見守ってもらいました。<br><br>
+                    <strong>【幸せを運ぶ馬（置物）】</strong><br>
+                    馬は、世界各地で「幸せの象徴」として大切にされてきました。<br>
+                    スウェーデンの赤い木馬、ダーラヘストは、<br>
+                    暮らしの中に小さな幸福を運ぶ存在。<br><br>
+                    <strong>【馬の蹄（ていてつ/ホースシュー）】</strong><br>
+                    馬の蹄鉄は、幸運を受け止め、<br>
+                    災いを遠ざける守りのかたちとして親しまれています。<br>
+                    これらに共通しているのは、<br>
+                    幸せは追いかけるものではなく、<br>
+                    気づいたとき、そばに在るという感覚です。<br><br>
+                    <strong>【馬にまつわることわざ】</strong><br>
+                    「人間万事塞翁が馬」という言葉があります。<br>
+                    今の結果が、すぐに意味を持たなくても問題ありません。<br>
+                    遠回りに見える時間が、<br>
+                    後になって支えになる場面もあります。<br>
+                    そして「馬が合う」という言葉。<br>
+                    無理に合わせる関係ではなく、<br>
+                    呼吸が自然と重なる状態を表します。<br>
+                    エワズが示すパートナーシップは、<br>
+                    依存ではなく、並んで進む関係です。<br><br>
+                    このメッセージを受け取った今、<br>
+                    何かを急いで決めなくても大丈夫です。<br>
+                    足元の感覚や、誰かとの距離感に、<br>
+                    少しだけ意識を向けてみる。<br>
+                    それだけで、次の一歩は穏やかに整っていきます。<br>
+                    馬は前を向いて進みます。<br>
+                    振り返らず、立ち止まらず、<br>
+                    今という地面を確かめながら。<br>
+                    エワズの導きが、<br>
+                    あなたの歩幅と静かに重なりますように。
+                </div>
+            </details>`;
+
+            return html;
         }
 
         // --- COLOR LOGIC ---
@@ -1207,6 +1488,8 @@
             renderPalette('palette-1', (color) => {
                 const res = document.getElementById('result-color-1');
                 const matchingRune = runes[color.runeId];
+                
+                // Existing logic + New Title/Tooltip + Footer Accordion only
                 res.innerHTML = `
                     <h3 class="result-title">あなたが選んだ色：${color.name}</h3>
                     <p><strong>心の声：</strong>${color.voice}</p>
@@ -1223,9 +1506,16 @@
                         </div>
                     </div>
                     <div class="prescription" style="background:#eefcfd;">
-                        <strong>🐎 馬の導き（スペシャルメッセージ）</strong><br>
+                        <strong style="display:flex; align-items:center; gap:5px;">
+                            🐎 馬（エワズ）からのメッセージ
+                            <div class="tooltip-container">
+                                <span class="tooltip-icon">?</span>
+                                <span class="tooltip-text">※エワズとは：古代文字ルーンで『馬』を意味し、信頼や前進、良きパートナーを示すラッキーシンボルです。</span>
+                            </div>
+                        </strong><br>
                         「馬は、あなたの心の奥にある本当の願いを知っています。一人で頑張らなくていいのです。運命の流れを信頼してください。」
                     </div>
+                    ${generateFooterContent('color1')}
                 `;
                 res.style.display = 'block';
                 res.scrollIntoView({ behavior: 'smooth' });
@@ -1273,6 +1563,7 @@
                         ? "表と裏にギャップがなく、とても素直な状態です。" + c1.prescription 
                         : "2つの色の間で揺れているかもしれません。" + c2.prescription}
                 </div>
+                ${generateFooterContent('color2')}
             `;
             res.style.display = 'block';
             res.scrollIntoView({ behavior: 'smooth' });
@@ -1282,15 +1573,11 @@
 
         function jumpToDetail(id) {
             if(id === "") return;
-            // Calls showSection which handles "lastSourceSection" logic
             showSection('rune-list');
-            
-            // Allow section to render then scroll
             setTimeout(() => {
                 const el = document.getElementById('rune-detail-' + id);
                 if(el) {
                     el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    // Highlight effect
                     el.style.transition = 'background 0.5s';
                     el.style.backgroundColor = '#fff9c4';
                     setTimeout(() => { el.style.backgroundColor = '#fafafa'; }, 1500);
@@ -1298,22 +1585,22 @@
             }, 100);
         }
 
-        // ONE ORACLE (With 24h limitation)
-        function drawOneOracle(isOtherPerson) {
-            const container = document.getElementById('result-rune-1');
-            const msgContainer = document.getElementById('result-rune-1-msg');
+        // ONE ORACLE (Wise - 24h Limit, Odin Text)
+        function drawWiseOracle(isOtherPerson) {
+            const container = document.getElementById('result-rune-wise');
+            const msgContainer = document.getElementById('result-rune-wise-msg');
             container.innerHTML = '';
             msgContainer.innerHTML = '';
 
-            const STORAGE_KEY_RESULT = 'hoshiiro_one_oracle_res';
-            const STORAGE_KEY_TIME = 'hoshiiro_one_oracle_time';
+            const STORAGE_KEY_RESULT = 'hoshiiro_wise_oracle_res';
+            const STORAGE_KEY_TIME = 'hoshiiro_wise_oracle_time';
             const ONE_DAY_MS = 24 * 60 * 60 * 1000;
             const now = new Date().getTime();
 
             let targetRuneId, targetIsReverse;
 
             if (isOtherPerson) {
-                // Ignore storage, draw new
+                // Ignore Limit
                 let r = Math.floor(Math.random() * runes.length);
                 let isRev = false;
                 if(runes[r].rev) isRev = Math.random() < 0.5;
@@ -1323,18 +1610,18 @@
                 msgContainer.innerHTML = '<span class="already-msg" style="background:#e3f2fd; color:#0d47a1;">※他の方を占うモードです（履歴は保存されません）</span>';
 
             } else {
-                // Check Storage
+                // Check Limit
                 const lastTime = localStorage.getItem(STORAGE_KEY_TIME);
                 const lastRes = localStorage.getItem(STORAGE_KEY_RESULT);
 
                 if (lastTime && lastRes && (now - lastTime < ONE_DAY_MS)) {
-                    // Load saved result
+                    // Locked
+                    msgContainer.innerHTML = '<span class="already-msg">ワイズは今、休憩中です。また明日来てくださいね。<br>（前回と同じ結果を表示します）</span>';
                     const parsed = JSON.parse(lastRes);
                     targetRuneId = parsed.id;
                     targetIsReverse = parsed.rev;
-                    msgContainer.innerHTML = '<span class="already-msg">本日はすでに引き終わっています。前回と同じ結果を表示します。</span>';
                 } else {
-                    // Draw New and Save
+                    // Draw New
                     let r = Math.floor(Math.random() * runes.length);
                     let isRev = false;
                     if(runes[r].rev) isRev = Math.random() < 0.5;
@@ -1347,16 +1634,41 @@
                 }
             }
 
-            // Render Single Card
-            renderOracleCard(container, targetRuneId, targetIsReverse, null);
+            // Render with "Odin" type
+            renderOracleCard(container, targetRuneId, targetIsReverse, null, 'odin');
+            
+            // Append Footer
+            const footerDiv = document.createElement('div');
+            footerDiv.style.width = "100%";
+            footerDiv.innerHTML = generateFooterContent('one');
+            container.appendChild(footerDiv);
         }
 
-        // Normal Draw (3 or 5)
+        // ONE ORACLE (Self - No Limit, Detail Text)
+        function drawSelfOracle() {
+            const container = document.getElementById('result-rune-self');
+            container.innerHTML = '';
+
+            let r = Math.floor(Math.random() * runes.length);
+            let isRev = false;
+            if(runes[r].rev) isRev = Math.random() < 0.5;
+
+            // Render with "detail" type
+            renderOracleCard(container, r, isRev, null, 'detail');
+
+            // Append Footer
+            const footerDiv = document.createElement('div');
+            footerDiv.style.width = "100%";
+            footerDiv.innerHTML = generateFooterContent('one');
+            container.appendChild(footerDiv);
+        }
+
+        // Normal Draw (3 or 5) - Detail Text
         function drawRune(count) {
             const container = document.getElementById(`result-rune-${count}`);
             container.innerHTML = '';
             
-            const labels3 = ["現状", "行動", "新しい状況"];
+            const labels3 = ["現状", "行動", "未来（新しい状況）"];
             const labels5 = ["現状の全体像", "チャレンジ", "求められる行動", "犠牲（捨てるもの）", "新たな状況"];
 
             let indices = [];
@@ -1373,11 +1685,20 @@
                 }
                 
                 let label = (count === 3) ? labels3[i] : labels5[i];
-                renderOracleCard(container, idx, isReverse, label);
+                renderOracleCard(container, idx, isReverse, label, 'detail');
             });
+
+            // Append Footer
+            const footerDiv = document.createElement('div');
+            footerDiv.style.width = "100%";
+            if(count === 3) footerDiv.innerHTML = generateFooterContent('three');
+            if(count === 5) footerDiv.innerHTML = generateFooterContent('five');
+            container.appendChild(footerDiv);
         }
 
-        function renderOracleCard(container, runeId, isReverse, label) {
+        // Unified Card Renderer
+        // textType: 'odin' (Wise Oracle) or 'detail' (Self/3/5 Oracle)
+        function renderOracleCard(container, runeId, isReverse, label, textType) {
             const rune = runes[runeId];
             const card = document.createElement('div');
             card.className = 'oracle-card';
@@ -1385,21 +1706,39 @@
             let posLabel = "";
             if(label) posLabel = `<div style="font-size:0.8rem; color:#888; margin-bottom:5px;">${label}</div>`;
 
-            const detailObj = isReverse ? rune.rev : rune.pos;
             const revClass = isReverse ? "reverse-img" : "";
             const revTag = isReverse ? '<span class="reverse-tag">【逆位置】</span>' : '<span>【正位置】</span>';
             
+            // Text selection logic
+            let mainText = "";
+            let adviceBox = "";
+
+            if (textType === 'odin') {
+                // Wise Oracle: Use odin_pos / odin_rev
+                let rawText = isReverse ? (rune.odin_rev || rune.odin_pos) : rune.odin_pos;
+                mainText = rawText.replace(/\n/g, '<br>');
+                // Note: Odin txt usually implies advice, no separate advice box from "detail" source for pure Odin experience,
+                // but prompt says "Result (Wise txt)" -> "Ehwaz msg". 
+                // We show the Odin text as main.
+            } else {
+                // Standard: Use detail_pos / detail_rev
+                const detailObj = isReverse ? rune.rev : rune.pos;
+                mainText = `<span style="font-weight:bold; color:var(--accent-color);">${detailObj.summary}</span>`;
+                adviceBox = `
+                <div style="font-size:0.85rem; background:#f9f9f9; padding:10px; border-radius:5px; margin-top:10px;">
+                    <strong>対策・アドバイス：</strong><br>
+                    ${detailObj.advice}
+                </div>`;
+            }
+
             card.innerHTML = `
                 ${posLabel}
                 <div style="height:100px; display:flex; justify-content:center; align-items:center; overflow:hidden; margin-bottom:10px;">
                     <img src="./rune/${rune.img}" class="rune-img-lg ${revClass}" alt="${rune.char}" onerror="this.style.display='none'">
                 </div>
                 <h4 style="margin:5px 0;">${rune.name} ${revTag}</h4>
-                <p style="font-weight:bold; color:var(--accent-color); font-size:0.95rem;">${detailObj.summary}</p>
-                <div style="font-size:0.85rem; background:#f9f9f9; padding:10px; border-radius:5px; margin-top:10px;">
-                    <strong>対策・アドバイス：</strong><br>
-                    ${detailObj.advice}
-                </div>
+                <p style="font-size:0.95rem; line-height:1.6;">${mainText}</p>
+                ${adviceBox}
                 <a class="jump-link" onclick="jumpToDetail(${rune.id})">📖 このルーンの詳細・解説を見る</a>
             `;
             container.appendChild(card);
@@ -1407,20 +1746,17 @@
 
         // --- RUNE LIST (Dictionary) ---
         function initRuneList() {
-            // Populate Nav Grid & Select if empty
             const navGrid = document.getElementById('rune-nav-grid');
             const navSelect = document.getElementById('rune-nav-select');
             
             if(navGrid.innerHTML === "") {
                 runes.forEach(r => {
-                    // Grid Item
                     const item = document.createElement('div');
                     item.className = 'rune-nav-item';
                     item.onclick = () => jumpToDetail(r.id);
                     item.innerHTML = `<img src="./rune/${r.img}" class="rune-nav-img" alt="${r.name}" onerror="this.style.display='none'">`;
                     navGrid.appendChild(item);
 
-                    // Select Option
                     const opt = document.createElement('option');
                     opt.value = r.id;
                     opt.innerText = `${r.id + 1}. ${r.name} (${r.en})`;
@@ -1428,16 +1764,14 @@
                 });
             }
 
-            // Populate Main Dictionary
             const dic = document.getElementById('rune-dictionary');
             if(dic.innerHTML !== "") return;
 
             runes.forEach(r => {
                 const item = document.createElement('div');
                 item.className = "rune-display";
-                item.id = "rune-detail-" + r.id; // ID for linking
+                item.id = "rune-detail-" + r.id; 
                 
-                // Details HTML builder
                 let posHtml = `
                     <div class="pos-box">
                         <div class="detail-label">正位置</div>
@@ -1544,5 +1878,4 @@
 
     </script>
 </body>
-
 </html>
